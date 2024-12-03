@@ -1,0 +1,11 @@
+docker run -it --volume ${PWD}:/usr/src/urdf_folder ros:melodic-robot
+
+/ros_entrypoint.sh
+
+cd /usr
+catkin_make
+source devel/setup.bash
+
+cd /usr/src/urdf_folder
+
+rosrun xacro xacro abb120.xacro >  abb120.urdf
