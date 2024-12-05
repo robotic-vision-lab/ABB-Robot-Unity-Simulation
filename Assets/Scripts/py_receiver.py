@@ -16,8 +16,8 @@ OUTGOING_BUFFER = None
 CHUNK_SIZE = 2400
 
 # image defaults
-IMAGE_WIDTH = 1280
-IMAGE_HEIGHT = 720
+IMAGE_WIDTH = 825
+IMAGE_HEIGHT = 464
 EOM_MARKER = b'<<EOM>>'
 
 # image for later use
@@ -54,7 +54,7 @@ def rgb_func(ipaddr='127.0.0.1', port=65400):
 #                         FOR VISUALIZATION                                    #
 # ---------------------------------------------------------------------------- #
             hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-            lower_red_1 = np.array([0, 100, 100])
+            lower_red_1 = np.array([0, 100, 150])
             upper_red_1 = np.array([10, 255, 255])
             lower_red_2 = np.array([160, 100, 100])
             upper_red_2 = np.array([180, 255, 255])
@@ -63,7 +63,7 @@ def rgb_func(ipaddr='127.0.0.1', port=65400):
             mask = cv2.bitwise_or(mask1, mask2)
             contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             for contour in contours:
-                if cv2.contourArea(contour) > 100:  # Filter out small contours
+                if cv2.contourArea(contour) > 50:  # Filter out small contours
                     x, y, w, h = cv2.boundingRect(contour)
                     cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
                     center_x = x + w // 2
@@ -143,7 +143,7 @@ def send_thread(ipaddr='127.0.0.1', bind_port=65403, destination_port=65402):
             origin_x = w_img / 2
             origin_y = h_img / 2
             hsv = cv2.cvtColor(rgb_image, cv2.COLOR_BGR2HSV)
-            lower_red_1 = np.array([0, 100, 100])
+            lower_red_1 = np.array([0, 100, 150])
             upper_red_1 = np.array([10, 255, 255])
             lower_red_2 = np.array([160, 100, 100])
             upper_red_2 = np.array([180, 255, 255])
@@ -152,15 +152,15 @@ def send_thread(ipaddr='127.0.0.1', bind_port=65403, destination_port=65402):
             mask = cv2.bitwise_or(mask1, mask2)
             contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             for contour in contours:
-                if cv2.contourArea(contour) > 100:  # Filter out small contours
+                if cv2.contourArea(contour) > 50:  # Filter out small contours
                     x, y, w_rect, h_rect = cv2.boundingRect(contour)
                     cv2.rectangle(rgb_image, (x, y), (x + w_rect, y + h_rect), (0, 255, 0), 2)
                     u = x + w_rect // 2
                     v = y + h_rect // 2
                     cv2.circle(rgb_image, (u, v), 5, (255, 0, 0), -1)
             z = int(depth_image[v, u])
-            image_info = (u - origin_x, h_img - v, z)
-
+            image_info = (u - origin_x, origin_y - v, z)
+            # print(u, v, z, w_img, h_img)
             # robot motion
             # image_info = 'Hello'
             outgoing_message = str(image_info).encode()
