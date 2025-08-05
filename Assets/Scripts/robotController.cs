@@ -17,7 +17,10 @@ public class RobotController : MonoBehaviour {
     
     private ArticulationBody[] articulationChain;
     private PythonSocketConnector image_info;
-    public GameObject target;
+    public GameObject[] all_targets;
+    public Dictionary<GameObject, Vector3> target_loc_dict;
+    private HashSet<Vector3> target_loc_unqiue = new HashSet<Vector3>();
+    public GameObject current_target;
     public Camera cam_1;
     float3x3 k;
 
@@ -30,6 +33,8 @@ public class RobotController : MonoBehaviour {
 
     public bool pick = false;
     public bool place = false;
+    public bool next_target = false;
+    public bool target_set = false;
     public float IK_threshold = 0.001f;
     public float learning_rate = 0.1f;
     public int iterations = 10;
@@ -52,12 +57,14 @@ public class RobotController : MonoBehaviour {
     public float maxDistance;
     public int maxIterations;
     public LayerMask obstacleLayer;
-    public List<Vector3> path_wc = new List<Vector3>();
+    public List<Vector3> path_wc;
 
     public UnityEngine.Vector3 ef_wc;
-    public UnityEngine.Vector3 target_wc;
-    public UnityEngine.Vector3 target_loc;
-    public UnityEngine.Vector3 interop_point;
+    public UnityEngine.Vector3 current_target_wc;
+    public UnityEngine.Vector3 current_target_loc;
+    public UnityEngine.Vector3 current_interop_point;
+    public UnityEngine.Vector3 start_state;
+    public int current_target_index;
 
     public float img_width;
     public float img_height;
@@ -193,25 +200,48 @@ public class RobotController : MonoBehaviour {
             if (IsCollisionFree(nearest_node_loc, next_node_loc)){
                 tree.Add(next_node_loc);
             }
-            if (Vector3.Distance(next_node_loc, target_loc) < maxDistance){
+            if (Vector3.Distance(next_node_loc, current_target_loc) < maxDistance){
                 //Debug.Log("End");
                 return GetShortestPath(tree, next_node_loc);
             }
         }
         return tree;
     }
-    UnityEngine.Vector3 GetRandomLoc(){ 
-        UnityEngine.Vector3 xyz_loc = new Vector3(UnityEngine.Random.Range(0, 11), 0f, UnityEngine.Random.Range(0, 11));
-        //Debug.Log(target_loc);
+
+    Vector3 GetRandomLoc(){
+        Vector3 xyz_loc = new Vector3(UnityEngine.Random.Range(0, 11), 0f, UnityEngine.Random.Range(0, 11));
         return xyz_loc;
+        // if (!target_loc_unqiue.Contains(xyz_loc)){
+        //         return xyz_loc;
+        //     }
+        //     else{
+        //         return GetRandomLoc();
+        //     }
     }
+
+    void InitRandomLoc(){
+        target_loc_dict = new Dictionary<GameObject, Vector3>();
+        for (int i = 0; i < all_targets.Count(); i++){
+            Vector3 xyz_loc = new Vector3(UnityEngine.Random.Range(0, 11), 0f, UnityEngine.Random.Range(0, 11));
+            if (!target_loc_unqiue.Contains(xyz_loc)){
+                target_loc_unqiue.Add(xyz_loc);
+                target_loc_dict[all_targets[i]] = xyz_loc;
+            }
+            else{
+                i--;
+            }
+        }
+    }
+
+    void SetRandomLoc(){
+        foreach(KeyValuePair<GameObject, Vector3> target in target_loc_dict){
+            target.Key.transform.position = GetWCFromLoc(target.Value);
+            //Debug.Log($"Key: {target.Key}, Value: {target.Value}");
+        }
+    }
+
     UnityEngine.Vector3 GetWCFromLoc(UnityEngine.Vector3 xyz_loc){
         return new UnityEngine.Vector3(0.07535f + xyz_loc.x * 0.0148f, 0.14755f, 0.25636f + xyz_loc.z * 0.0148f);
-    }
-    
-    void SetTargetLoc(){
-        target.transform.position = new UnityEngine.Vector3(0.07535f + target_loc.x * 0.0148f, 0.14755f, 0.25636f + target_loc.z * 0.0148f);
-        target_wc = target.transform.position;
     }
 
     Vector3 GetNearestNode(List<UnityEngine.Vector3> tree, UnityEngine.Vector3 xyz_loc){
@@ -260,11 +290,11 @@ public class RobotController : MonoBehaviour {
         }
         path_wc.Add(ef_wc);
         path_wc.Reverse();
+        path_wc[0] = start_state;
         return path_wc;
     }
 
-    void OnDrawGizmos()
-    {
+    void OnDrawGizmos(){
         if (path_wc == null || path_wc.Count < 2)
             return;
         Gizmos.color = Color.green;
@@ -272,15 +302,14 @@ public class RobotController : MonoBehaviour {
             Gizmos.DrawLine(path_wc[i], path_wc[i + 1]);
         }
     }
-
     void Start(){
     // PID
-        image_info = GameObject.Find("cam_1").GetComponent<PythonSocketConnector>();
+        //image_info = GameObject.Find("cam_1").GetComponent<PythonSocketConnector>();
+        start_state = new Vector3(0.421037f, 0.627905f, 4.800409e-05f);
         ef_wc = GetFK(theta_1, theta_2, theta_3, theta_4, theta_5, theta_6).GetColumn(3);
-        target_loc = GetRandomLoc();
-        SetTargetLoc();
-        path_wc = GetPath();
-        interop_point = path_wc[0];
+        all_targets = GameObject.FindGameObjectsWithTag("target");
+        InitRandomLoc();
+        SetRandomLoc();
         articulationChain = this.GetComponentsInChildren<ArticulationBody>();
         k = GetIntrinsic(cam_1);
         int defDyanmicVal = 10;
@@ -294,9 +323,7 @@ public class RobotController : MonoBehaviour {
                 currentDrive.damping = damping;
                 joint.xDrive = currentDrive;
             }
-
         }
-
     void Update(){
         articulationChain = this.GetComponentsInChildren<ArticulationBody>();
         foreach (ArticulationBody joint in articulationChain)
@@ -317,21 +344,67 @@ public class RobotController : MonoBehaviour {
         ArticulationDrive j6d = j6.xDrive;
 
         if(pick == true && place == false){
-            target.transform.position = GetFK(theta_1, theta_2, theta_3, theta_4, theta_5, theta_6).GetColumn(3);
-            ef_wc = target.transform.position;
-            GetIK(theta_1, theta_2, theta_3, theta_4, theta_5, theta_6, interop_point);
+            current_target.transform.position = GetFK(theta_1, theta_2, theta_3, theta_4, theta_5, theta_6).GetColumn(3);
+            ef_wc = current_target.transform.position;
+            GetIK(theta_1, theta_2, theta_3, theta_4, theta_5, theta_6, current_interop_point);
 
         } 
         if (pick == false && place == true) {
-            target.transform.position = GetFK(theta_1, theta_2, theta_3, theta_4, theta_5, theta_6).GetColumn(3);
-            ef_wc = target.transform.position;
-            GetIK(theta_1, theta_2, theta_3, theta_4, theta_5, theta_6, new UnityEngine.Vector3(0.2995f, 0.00739f, -0.0321f));
-        }
-        if (pick == false && place == false){
-            target.transform.position = target_wc;
-            ef_wc = GetFK(theta_1, theta_2, theta_3, theta_4, theta_5, theta_6).GetColumn(3);
-            GetIK(theta_1, theta_2, theta_3, theta_4, theta_5, theta_6, interop_point);
+            current_target.transform.position = GetFK(theta_1, theta_2, theta_3, theta_4, theta_5, theta_6).GetColumn(3);
+            ef_wc = current_target.transform.position;
+            if (current_target_index == 0){
+                GetIK(theta_1, theta_2, theta_3, theta_4, theta_5, theta_6, new UnityEngine.Vector3(0.50279f, 0.00739f, 0.0378f));
             }
+            if (current_target_index == 1){
+                GetIK(theta_1, theta_2, theta_3, theta_4, theta_5, theta_6, new UnityEngine.Vector3(0.5138f, 0.00739f, 0.2041f));
+            }
+            if (current_target_index == 2){
+                GetIK(theta_1, theta_2, theta_3, theta_4, theta_5, theta_6, new UnityEngine.Vector3(0.5138f, 0.00739f, 0.3539f));
+            }
+            if (current_target_index == 3){
+                GetIK(theta_1, theta_2, theta_3, theta_4, theta_5, theta_6, new UnityEngine.Vector3(0.2995f, 0.00739f, -0.0321f));
+            }
+            target_set = false;
+        }
+        if (pick == false && place == false && target_set == true){
+            ef_wc = GetFK(theta_1, theta_2, theta_3, theta_4, theta_5, theta_6).GetColumn(3);
+            GetIK(theta_1, theta_2, theta_3, theta_4, theta_5, theta_6, current_interop_point);
+            }
+        if (next_target == true){
+            path_wc = new List<Vector3>();
+            //current_target_loc = new UnityEngine.Vector3();
+            if (current_target_index == 0){
+                current_target = all_targets[0];
+                current_target_loc = target_loc_dict[current_target];
+                path_wc = GetPath();
+                current_interop_point = path_wc[0];
+                target_set = true;
+                next_target = false;
+            }
+            if (current_target_index == 1){
+                current_target = all_targets[1];
+                current_target_loc = target_loc_dict[current_target];
+                path_wc = GetPath();
+                target_set = true;
+                next_target = false;
+            }
+            if (current_target_index == 2){
+                current_target = all_targets[2];
+                current_target_loc = target_loc_dict[current_target];
+                path_wc = GetPath();
+                target_set = true;
+                next_target = false;
+            }
+            if (current_target_index == 3){
+                current_target = all_targets[3];
+                current_target_loc = target_loc_dict[current_target];
+                path_wc = GetPath();
+                target_set = true;
+                next_target = false;
+            }
+        }
+
+
         cam_1_rotation = new UnityEngine.Vector3(20f, 0f, 0f);
         cam_1_position = cam_1.transform.position;
         if (image_info != null){

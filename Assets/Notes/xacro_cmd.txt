@@ -8,4 +8,4 @@ source devel/setup.bash
 
 cd /usr/src/urdf_folder
 
-rosrun xacro xacro abb120.xacro >  abb120.urdf
+rosrun xacro xacro abb.xacro >  abb120.urdf
