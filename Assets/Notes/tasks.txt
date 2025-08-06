@@ -1,5 +1,0 @@
-To Do:
-
-Add multiple cameras to threads by changing ports for each camera
-Add a separate thread in py_receiver for viewing the all of the frames
-view rgb frames for all cameras in one window by concatenating frames

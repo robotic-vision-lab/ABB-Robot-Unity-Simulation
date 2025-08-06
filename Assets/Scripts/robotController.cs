@@ -14,15 +14,11 @@ public class RobotController : MonoBehaviour {
     public float torque = 100f; // Units: Nm or N
     public float acceleration = 5f;// Units: m/s^2 / degree/s^2
 
-    
     private ArticulationBody[] articulationChain;
-    private PythonSocketConnector image_info;
     public GameObject[] all_targets;
     public Dictionary<GameObject, Vector3> target_loc_dict;
     private HashSet<Vector3> target_loc_unqiue = new HashSet<Vector3>();
     public GameObject current_target;
-    public Camera cam_1;
-    float3x3 k;
 
     public ArticulationBody j1;
     public ArticulationBody j2;
@@ -66,29 +62,6 @@ public class RobotController : MonoBehaviour {
     public UnityEngine.Vector3 start_state;
     public int current_target_index;
 
-    public float img_width;
-    public float img_height;
-    public UnityEngine.Vector3 cam_1_position;
-    public UnityEngine.Vector3 cam_1_rotation;
-    public UnityEngine.Vector3 pred_target_position;
-    public float3x3 GetIntrinsic(Camera cam){
-        img_width = cam.pixelWidth;
-        img_height = cam.pixelHeight;
-        float pixel_aspect_ratio = cam.pixelWidth / cam.pixelHeight;
-
-        float alpha_u = cam.focalLength * (cam.pixelWidth / cam.sensorSize.x);
-        float alpha_v = cam.focalLength * pixel_aspect_ratio * (cam.pixelHeight / cam.sensorSize.y);
-
-        float u_0 = cam.pixelWidth / 2;
-        float v_0 = cam.pixelHeight / 2;
-
-        //IntrinsicMatrix in row major
-        float3x3 camIntriMatrix = new float3x3(alpha_u,      0f, u_0,
-                                                    0f, alpha_v, v_0,
-                                                    0f,      0f,  1f);
-        return camIntriMatrix;
-    }
-    
     UnityEngine.Matrix4x4 GetRotation(UnityEngine.Vector3 angles){
         float rad_x = (float)(angles.x * (Math.PI / 180));
         float rad_y = (float)(angles.y * (Math.PI / 180));
@@ -211,12 +184,6 @@ public class RobotController : MonoBehaviour {
     Vector3 GetRandomLoc(){
         Vector3 xyz_loc = new Vector3(UnityEngine.Random.Range(0, 11), 0f, UnityEngine.Random.Range(0, 11));
         return xyz_loc;
-        // if (!target_loc_unqiue.Contains(xyz_loc)){
-        //         return xyz_loc;
-        //     }
-        //     else{
-        //         return GetRandomLoc();
-        //     }
     }
 
     void InitRandomLoc(){
@@ -236,7 +203,6 @@ public class RobotController : MonoBehaviour {
     void SetRandomLoc(){
         foreach(KeyValuePair<GameObject, Vector3> target in target_loc_dict){
             target.Key.transform.position = GetWCFromLoc(target.Value);
-            //Debug.Log($"Key: {target.Key}, Value: {target.Value}");
         }
     }
 
@@ -304,14 +270,12 @@ public class RobotController : MonoBehaviour {
     }
     void Start(){
     // PID
-        //image_info = GameObject.Find("cam_1").GetComponent<PythonSocketConnector>();
         start_state = new Vector3(0.421037f, 0.627905f, 4.800409e-05f);
         ef_wc = GetFK(theta_1, theta_2, theta_3, theta_4, theta_5, theta_6).GetColumn(3);
         all_targets = GameObject.FindGameObjectsWithTag("target");
         InitRandomLoc();
         SetRandomLoc();
         articulationChain = this.GetComponentsInChildren<ArticulationBody>();
-        k = GetIntrinsic(cam_1);
         int defDyanmicVal = 10;
         foreach (ArticulationBody joint in articulationChain)
             {   
@@ -403,34 +367,7 @@ public class RobotController : MonoBehaviour {
                 next_target = false;
             }
         }
-
-
-        cam_1_rotation = new UnityEngine.Vector3(20f, 0f, 0f);
-        cam_1_position = cam_1.transform.position;
-        if (image_info != null){
-            if (image_info.GetLastIncomingMessage() != null){
-                var uvz = image_info.GetLastIncomingMessage().Trim('(', ')').Split(',').Select(part => float.Parse(part.Trim())).ToArray();
-                float u = uvz[0];
-                float v = uvz[1];
-                float Z = uvz[2] / 100;
-                float3 uvz_ = new float3(u, v, Z);
-
-                float3 xy_norm = math.mul(math.inverse(k), new float3(u,v,1));
-                float3 xy_scaled = xy_norm * Z;
-                float rad_x = (float)(cam_1_rotation.x * (Math.PI / 180));
-                float3x3 R = new float3x3(1f,              0f,               0f,
-                                        0f, math.cos(rad_x), -math.sin(rad_x),
-                                        0f, math.sin(rad_x),  math.cos(rad_x));
-                float3 camera_world = new float3(cam_1_position.z, cam_1_position.x, cam_1_position.y);
-                float3 xy_local = math.mul(R, xy_scaled);
-                float3 xy_world = camera_world - xy_local;
-                pred_target_position = new UnityEngine.Vector3(xy_world[1], Z, xy_world[0]);
-                Debug.Log(camera_world);
-                Debug.Log(xy_local);
-                Debug.Log(xy_world);
-                }
-            }
-
+        
         j1d.target = theta_1;
         j2d.target = theta_2;
         j3d.target = theta_3;

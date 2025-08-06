@@ -22,10 +22,6 @@ public class RobotControllerEditor : Editor {
         robotController.current_target_wc = EditorGUILayout.Vector3Field("Target-WC", robotController.current_target_wc);
         robotController.current_target_loc = EditorGUILayout.Vector3Field("Target-Loc", robotController.current_target_loc);
         robotController.current_interop_point = EditorGUILayout.Vector3Field("Interop-Point", robotController.current_interop_point);
-        robotController.img_height = EditorGUILayout.FloatField("Image-Height", robotController.img_height);
-        robotController.img_width = EditorGUILayout.FloatField("Image-Width", robotController.img_width);
-        robotController.cam_1_position = EditorGUILayout.Vector3Field("Camera-Position", robotController.cam_1_position);
-        robotController.cam_1_rotation = EditorGUILayout.Vector3Field("Camera-Rotation", robotController.cam_1_rotation);
         robotController.maxIterations = EditorGUILayout.IntField("RRT-Iterations", robotController.maxIterations);
         
         
