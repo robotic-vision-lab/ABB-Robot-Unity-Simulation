@@ -10,10 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 46621038586832358}
   - component: {fileID: 3785528363788693802}
-  - component: {fileID: 3444930409038864894}
-  - component: {fileID: 713614212193400687}
-  - component: {fileID: 84799752225745190}
   - component: {fileID: 6269772044351389620}
+  - component: {fileID: 2934289481777427650}
   m_Layer: 0
   m_Name: cam_1
   m_TagString: Untagged
@@ -87,79 +85,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!114 &3444930409038864894
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7261933458186925744}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4467405dbcbd3d64ab4363e9ae8bb813, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_CameraSensor:
-    rid: 4007295568958718018
-  m_Labelers:
-  - rid: 4007295568958718019
-  m_LayerMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  id: camera
-  description: 
-  captureRgbImages: 1
-  firstCaptureFrame: 0
-  captureTriggerMode: 1
-  manualSensorAffectSimulationTiming: 0
-  simulationDeltaTime: 0.0166
-  framesBetweenCaptures: 0
-  showVisualizations: 1
-  alphaThreshold: 0.1
-  overrideLayerMask: 0
-  useAccumulation: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: 4007295568958718018
-      type: {class: UnityCameraSensor, ns: UnityEngine.Perception.GroundTruth.Sensors, asm: Unity.Perception.Runtime}
-      data:
-        superSamplingFactor: 1
-    - rid: 4007295568958718019
-      type: {class: DepthLabeler, ns: UnityEngine.Perception.GroundTruth.Labelers, asm: Unity.Perception.Runtime}
-      data:
-        enabled: 1
-        annotationId: Depth
-        measurementStrategy: 0
---- !u!114 &713614212193400687
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7261933458186925744}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fb9940257dbc98f488a35459b16aea71, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  RGBDCamera: {fileID: 3444930409038864894}
-  RGBRenderTexture: {fileID: 0}
-  DepthRenderTexture: {fileID: 0}
-  JPEGQuality: 80
---- !u!114 &84799752225745190
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7261933458186925744}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 335dba39e537f81478b4b66e852273d0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CaptureObject: {fileID: 713614212193400687}
 --- !u!114 &6269772044351389620
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -299,6 +224,14 @@ MonoBehaviour:
       enableFptlForForwardOpaque: 0
       enableBigTilePrepass: 0
       isFptlEnabled: 0
+--- !u!81 &2934289481777427650
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7261933458186925744}
+  m_Enabled: 0
 --- !u!1 &7590757236986746932
 GameObject:
   m_ObjectHideFlags: 0

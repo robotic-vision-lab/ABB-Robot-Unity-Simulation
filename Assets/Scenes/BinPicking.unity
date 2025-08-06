@@ -196,7 +196,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 942569915}
-  - component: {fileID: 942569914}
   m_Layer: 0
   m_Name: _PerceptionSettings
   m_TagString: Untagged
@@ -204,37 +203,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &942569914
-MonoBehaviour:
-  m_ObjectHideFlags: 3
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 942569913}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c5ee903ff896bde4bb82aed4aec2bf61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  consumerEndpoint:
-    rid: 4007295533184712947
-  accumulationSettings:
-    rid: 4007295533184712948
-  references:
-    version: 2
-    RefIds:
-    - rid: 4007295533184712947
-      type: {class: SoloEndpoint, ns: UnityEngine.Perception.GroundTruth.Consumers, asm: Unity.Perception.Runtime}
-      data:
-        soloDatasetName: solo
-    - rid: 4007295533184712948
-      type: {class: AccumulationSettings, ns: UnityEngine.Perception.Settings, asm: Unity.Perception.Runtime}
-      data:
-        accumulationSamples: 256
-        shutterInterval: 0
-        shutterFullyOpen: 0
-        shutterBeginsClosing: 1
-        adaptFixedLengthScenarioFrames: 1
 --- !u!4 &942569915
 Transform:
   m_ObjectHideFlags: 3
@@ -270,19 +238,6 @@ ArticulationBody:
   m_CorrespondingSourceObject: {fileID: 6874296801492977734, guid: 9b4f6e614a29bda4987b4a965ba26a58, type: 3}
   m_PrefabInstance: {fileID: 7223355268485408547}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &2011765828 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7261933458186925744, guid: 116ade1ae2e116949b081b18f9999892, type: 3}
-  m_PrefabInstance: {fileID: 2262735750737919432}
-  m_PrefabAsset: {fileID: 0}
---- !u!81 &2011765834
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2011765828}
-  m_Enabled: 0
 --- !u!1 &2013410473
 GameObject:
   m_ObjectHideFlags: 1
@@ -454,14 +409,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 3444930409038864894, guid: 116ade1ae2e116949b081b18f9999892, type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3785528363788693802, guid: 116ade1ae2e116949b081b18f9999892, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 7032826338289421245, guid: 116ade1ae2e116949b081b18f9999892, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.0827
@@ -502,28 +449,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7261933458186925744, guid: 116ade1ae2e116949b081b18f9999892, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 7697301469697986823, guid: 116ade1ae2e116949b081b18f9999892, type: 3}
       propertyPath: m_Name
       value: abb120_teleop_env
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 3444930409038864894, guid: 116ade1ae2e116949b081b18f9999892, type: 3}
-    - {fileID: 713614212193400687, guid: 116ade1ae2e116949b081b18f9999892, type: 3}
-    - {fileID: 84799752225745190, guid: 116ade1ae2e116949b081b18f9999892, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 7261933458186925744, guid: 116ade1ae2e116949b081b18f9999892, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2011765834}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 116ade1ae2e116949b081b18f9999892, type: 3}
 --- !u!1001 &2514521836425415497
 PrefabInstance:
