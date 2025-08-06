@@ -6,13 +6,18 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Collections;
 
+
+/// <summary>
+/// Pick and place task using RRT (Rapidly-exploring Random Tree) algorithm
+/// </summary>
+
 public class RobotController : MonoBehaviour {
     public float stiffness;
     public float damping;
     public float forceLimit;
-    public float speed = 5f; // Units: degree/s
-    public float torque = 100f; // Units: Nm or N
-    public float acceleration = 5f;// Units: m/s^2 / degree/s^2
+    public float speed = 5f;
+    public float torque = 100f;
+    public float acceleration = 5f;
 
     private ArticulationBody[] articulationChain;
     public GameObject[] all_targets;
@@ -62,6 +67,7 @@ public class RobotController : MonoBehaviour {
     public UnityEngine.Vector3 start_state;
     public int current_target_index;
 
+    // Transformation matrix calculation used in forward kinematics
     UnityEngine.Matrix4x4 GetRotation(UnityEngine.Vector3 angles){
         float rad_x = (float)(angles.x * (Math.PI / 180));
         float rad_y = (float)(angles.y * (Math.PI / 180));
@@ -88,6 +94,7 @@ public class RobotController : MonoBehaviour {
         return rot_z * rot_y * rot_x;
     }
 
+    // Forward kinematics calculation using robot arm dimensions
     UnityEngine.Matrix4x4 GetFK(float t1, float t2, float t3, float t4, float t5, float t6){
         UnityEngine.Matrix4x4 T = UnityEngine.Matrix4x4.identity;
         UnityEngine.Matrix4x4 T_1 = UnityEngine.Matrix4x4.Translate(new UnityEngine.Vector3(0, 0.166f, 0));
@@ -110,6 +117,8 @@ public class RobotController : MonoBehaviour {
         T = T * (T_6 * R_6);
         return T;
     }
+
+    // Applying small delta changes to joint angles for determining gradients
     float GetGradient(float t1, float t2, float t3, float t4, float t5, float t6, int joint_num, UnityEngine.Vector3 target_point){
         float D = UnityEngine.Vector3.Distance(GetFK(t1, t2, t3, t4, t5, t6).GetColumn(3), target_point);
         if (joint_num == 1){
@@ -134,6 +143,7 @@ public class RobotController : MonoBehaviour {
         return((D_prime - D) / delta);
     }
 
+    // Inverse kinematics using gradient descent
     void GetIK(float t1, float t2, float t3, float t4, float t5, float t6, UnityEngine.Vector3 target_point){
         for (int i = 0; i < iterations; i++){
             float error_distance = UnityEngine.Vector3.Distance(GetFK(t1, t2, t3, t4, t5, t6).GetColumn(3), target_point);
@@ -160,11 +170,11 @@ public class RobotController : MonoBehaviour {
             theta_5 = t5;
         }
     }
-    //=========================================================== RRT ==================================================//
+    
+    // Generate the RRT tree
     List<Vector3> GetPath(){   
         UnityEngine.Vector3 current_loc = GetRandomLoc();
         List<Vector3> tree = new List<Vector3> { current_loc };
-        //Debug.Log(current_loc);
         for (int i = 0; i < maxIterations; i++)
         {
             UnityEngine.Vector3 random_loc = GetRandomLoc();
@@ -174,18 +184,19 @@ public class RobotController : MonoBehaviour {
                 tree.Add(next_node_loc);
             }
             if (Vector3.Distance(next_node_loc, current_target_loc) < maxDistance){
-                //Debug.Log("End");
                 return GetShortestPath(tree, next_node_loc);
             }
         }
         return tree;
     }
 
+    // Select random location within the search space (shown under Display 1 camera)
     Vector3 GetRandomLoc(){
         Vector3 xyz_loc = new Vector3(UnityEngine.Random.Range(0, 11), 0f, UnityEngine.Random.Range(0, 11));
         return xyz_loc;
     }
 
+    // Randomize and store the location of the target objects within search space
     void InitRandomLoc(){
         target_loc_dict = new Dictionary<GameObject, Vector3>();
         for (int i = 0; i < all_targets.Count(); i++){
@@ -200,16 +211,19 @@ public class RobotController : MonoBehaviour {
         }
     }
 
+    // Position the targets at their corresponding locations from initRandomLoc() 
     void SetRandomLoc(){
         foreach(KeyValuePair<GameObject, Vector3> target in target_loc_dict){
             target.Key.transform.position = GetWCFromLoc(target.Value);
         }
     }
 
+    // Transfrom search space coordinates into world coordinates
     UnityEngine.Vector3 GetWCFromLoc(UnityEngine.Vector3 xyz_loc){
         return new UnityEngine.Vector3(0.07535f + xyz_loc.x * 0.0148f, 0.14755f, 0.25636f + xyz_loc.z * 0.0148f);
     }
 
+    // Iterate through tree to determine next node that is closest to target
     Vector3 GetNearestNode(List<UnityEngine.Vector3> tree, UnityEngine.Vector3 xyz_loc){
         Vector3 nearest_node = tree[0];
         float min_dist = UnityEngine.Vector3.Distance(xyz_loc, nearest_node);
@@ -223,11 +237,13 @@ public class RobotController : MonoBehaviour {
         return nearest_node;
     }
 
+    // Determine direction to move from start node to a random end location while limiting movements to a preset step distance
     Vector3 GetNextNode(UnityEngine.Vector3 start, UnityEngine.Vector3 end){
         Vector3 dir = (end - start).normalized;
         return start + dir * Mathf.Min(step, UnityEngine.Vector3.Distance(start, end));
     }
 
+    // Use raycasting to determine collision in the RRT path
     bool IsCollisionFree(UnityEngine.Vector3 start, UnityEngine.Vector3 end){
         RaycastHit hit;
         if (Physics.Linecast(start, end, out hit, obstacleLayer)){
@@ -236,6 +252,7 @@ public class RobotController : MonoBehaviour {
         return true;
     }
 
+    // Get the final tree path
     List<Vector3> GetShortestPath(List<UnityEngine.Vector3> tree, UnityEngine.Vector3 end){
         List<Vector3> path_loc = new List<Vector3>();
         path_loc.Add(end);
@@ -260,6 +277,7 @@ public class RobotController : MonoBehaviour {
         return path_wc;
     }
 
+    // Draw the RRT path (green)
     void OnDrawGizmos(){
         if (path_wc == null || path_wc.Count < 2)
             return;
@@ -268,8 +286,9 @@ public class RobotController : MonoBehaviour {
             Gizmos.DrawLine(path_wc[i], path_wc[i + 1]);
         }
     }
+
+    // Initialize end effector, tragets, and PID controller
     void Start(){
-    // PID
         start_state = new Vector3(0.421037f, 0.627905f, 4.800409e-05f);
         ef_wc = GetFK(theta_1, theta_2, theta_3, theta_4, theta_5, theta_6).GetColumn(3);
         all_targets = GameObject.FindGameObjectsWithTag("target");
@@ -277,6 +296,8 @@ public class RobotController : MonoBehaviour {
         SetRandomLoc();
         articulationChain = this.GetComponentsInChildren<ArticulationBody>();
         int defDyanmicVal = 10;
+
+        // PID Controller
         foreach (ArticulationBody joint in articulationChain)
             {   
                 ArticulationDrive currentDrive = joint.xDrive;
@@ -288,6 +309,8 @@ public class RobotController : MonoBehaviour {
                 joint.xDrive = currentDrive;
             }
         }
+
+    // Update PID controller
     void Update(){
         articulationChain = this.GetComponentsInChildren<ArticulationBody>();
         foreach (ArticulationBody joint in articulationChain)
@@ -299,6 +322,7 @@ public class RobotController : MonoBehaviour {
             }
         }
 
+    // Logic to direct the end effector along the RRT path and switch targets
     void FixedUpdate(){
         ArticulationDrive j1d = j1.xDrive;
         ArticulationDrive j2d = j2.xDrive;
@@ -311,9 +335,9 @@ public class RobotController : MonoBehaviour {
             current_target.transform.position = GetFK(theta_1, theta_2, theta_3, theta_4, theta_5, theta_6).GetColumn(3);
             ef_wc = current_target.transform.position;
             GetIK(theta_1, theta_2, theta_3, theta_4, theta_5, theta_6, current_interop_point);
+            }
 
-        } 
-        if (pick == false && place == true) {
+        if (pick == false && place == true){
             current_target.transform.position = GetFK(theta_1, theta_2, theta_3, theta_4, theta_5, theta_6).GetColumn(3);
             ef_wc = current_target.transform.position;
             if (current_target_index == 0){
@@ -329,14 +353,15 @@ public class RobotController : MonoBehaviour {
                 GetIK(theta_1, theta_2, theta_3, theta_4, theta_5, theta_6, new UnityEngine.Vector3(0.2995f, 0.00739f, -0.0321f));
             }
             target_set = false;
-        }
+            }
+
         if (pick == false && place == false && target_set == true){
             ef_wc = GetFK(theta_1, theta_2, theta_3, theta_4, theta_5, theta_6).GetColumn(3);
             GetIK(theta_1, theta_2, theta_3, theta_4, theta_5, theta_6, current_interop_point);
             }
+
         if (next_target == true){
             path_wc = new List<Vector3>();
-            //current_target_loc = new UnityEngine.Vector3();
             if (current_target_index == 0){
                 current_target = all_targets[0];
                 current_target_loc = target_loc_dict[current_target];
@@ -382,5 +407,4 @@ public class RobotController : MonoBehaviour {
         j5.xDrive = j5d;
         j6.xDrive = j6d;
         }
-
     }   
