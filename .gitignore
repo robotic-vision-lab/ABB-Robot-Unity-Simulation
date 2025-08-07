@@ -3,13 +3,11 @@ Logs/
 UserSettings/
 Library/
 *.blob
+Temp/
 
 # vs code
 .vscode/
 *.sln
-
-# test scripts
-Temp/
 
 # LaTeX temporary files
 *.aux
