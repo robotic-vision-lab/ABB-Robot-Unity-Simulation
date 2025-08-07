@@ -4,6 +4,10 @@ using Unity.Mathematics;
 using System.Collections.Generic;
 using System.Collections;
 
+/// <summary>
+/// UI and visual update of robot stats
+/// </summary>
+
 [CustomEditor(typeof(RobotController))]
 public class RobotControllerEditor : Editor {
     private int i = 0;
@@ -19,12 +23,11 @@ public class RobotControllerEditor : Editor {
         robotController.theta_6 = EditorGUILayout.FloatField("Theta_6", robotController.theta_6);
         robotController.learning_rate = EditorGUILayout.FloatField("IK-Learning-Rate", robotController.learning_rate);
         robotController.ef_wc = EditorGUILayout.Vector3Field("End-Effector", robotController.ef_wc);
+        robotController.current_target = (GameObject)EditorGUILayout.ObjectField("Target", robotController.current_target, typeof(GameObject), false);
         robotController.current_target_wc = EditorGUILayout.Vector3Field("Target-WC", robotController.current_target_wc);
         robotController.current_target_loc = EditorGUILayout.Vector3Field("Target-Loc", robotController.current_target_loc);
-        robotController.current_interop_point = EditorGUILayout.Vector3Field("Interop-Point", robotController.current_interop_point);
-        robotController.maxIterations = EditorGUILayout.IntField("RRT-Iterations", robotController.maxIterations);
-        
-        
+        //robotController.current_interop_point = EditorGUILayout.Vector3Field("Interop-Point", robotController.current_interop_point);
+        //robotController.maxIterations = EditorGUILayout.IntField("RRT-Iterations", robotController.maxIterations);
         
         if(GUILayout.Button("Next Point")){
             

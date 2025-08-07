@@ -1,14 +1,10 @@
 using System;
 using UnityEngine;
-using UnityEditor;
-using Unity.Mathematics;
 using System.Linq;
 using System.Collections.Generic;
-using System.Collections;
-
 
 /// <summary>
-/// Pick and place task using RRT (Rapidly-exploring Random Tree) algorithm
+/// Robot movement and pathing functions
 /// </summary>
 
 public class RobotController : MonoBehaviour {
@@ -95,7 +91,7 @@ public class RobotController : MonoBehaviour {
     }
 
     // Forward kinematics calculation using robot arm dimensions
-    UnityEngine.Matrix4x4 GetFK(float t1, float t2, float t3, float t4, float t5, float t6){
+    public UnityEngine.Matrix4x4 GetFK(float t1, float t2, float t3, float t4, float t5, float t6){
         UnityEngine.Matrix4x4 T = UnityEngine.Matrix4x4.identity;
         UnityEngine.Matrix4x4 T_1 = UnityEngine.Matrix4x4.Translate(new UnityEngine.Vector3(0, 0.166f, 0));
         UnityEngine.Matrix4x4 R_1 = GetRotation(new UnityEngine.Vector3(0, -t1, 0));
@@ -144,7 +140,7 @@ public class RobotController : MonoBehaviour {
     }
 
     // Inverse kinematics using gradient descent
-    void GetIK(float t1, float t2, float t3, float t4, float t5, float t6, UnityEngine.Vector3 target_point){
+    public void GetIK(float t1, float t2, float t3, float t4, float t5, float t6, UnityEngine.Vector3 target_point){
         for (int i = 0; i < iterations; i++){
             float error_distance = UnityEngine.Vector3.Distance(GetFK(t1, t2, t3, t4, t5, t6).GetColumn(3), target_point);
             
@@ -172,7 +168,7 @@ public class RobotController : MonoBehaviour {
     }
     
     // Generate the RRT tree
-    List<Vector3> GetPath(){   
+    public List<Vector3> GetPath(){   
         UnityEngine.Vector3 current_loc = GetRandomLoc();
         List<Vector3> tree = new List<Vector3> { current_loc };
         for (int i = 0; i < maxIterations; i++)
@@ -197,7 +193,7 @@ public class RobotController : MonoBehaviour {
     }
 
     // Randomize and store the location of the target objects within search space
-    void InitRandomLoc(){
+    public void InitRandomLoc(){
         target_loc_dict = new Dictionary<GameObject, Vector3>();
         for (int i = 0; i < all_targets.Count(); i++){
             Vector3 xyz_loc = new Vector3(UnityEngine.Random.Range(0, 11), 0f, UnityEngine.Random.Range(0, 11));
@@ -212,7 +208,7 @@ public class RobotController : MonoBehaviour {
     }
 
     // Position the targets at their corresponding locations from initRandomLoc() 
-    void SetRandomLoc(){
+    public void SetRandomLoc(){
         foreach(KeyValuePair<GameObject, Vector3> target in target_loc_dict){
             target.Key.transform.position = GetWCFromLoc(target.Value);
         }
@@ -287,19 +283,13 @@ public class RobotController : MonoBehaviour {
         }
     }
 
-    // Initialize end effector, tragets, and PID controller
-    void Start(){
-        start_state = new Vector3(0.421037f, 0.627905f, 4.800409e-05f);
-        ef_wc = GetFK(theta_1, theta_2, theta_3, theta_4, theta_5, theta_6).GetColumn(3);
-        all_targets = GameObject.FindGameObjectsWithTag("target");
-        InitRandomLoc();
-        SetRandomLoc();
+    // Controls the physics and movement of the robot arm
+    public void PID(){
         articulationChain = this.GetComponentsInChildren<ArticulationBody>();
         int defDyanmicVal = 10;
 
         // PID Controller
-        foreach (ArticulationBody joint in articulationChain)
-            {   
+        foreach (ArticulationBody joint in articulationChain){   
                 ArticulationDrive currentDrive = joint.xDrive;
                 joint.jointFriction = defDyanmicVal;
                 joint.angularDamping = defDyanmicVal;
@@ -308,103 +298,5 @@ public class RobotController : MonoBehaviour {
                 currentDrive.damping = damping;
                 joint.xDrive = currentDrive;
             }
-        }
-
-    // Update PID controller
-    void Update(){
-        articulationChain = this.GetComponentsInChildren<ArticulationBody>();
-        foreach (ArticulationBody joint in articulationChain)
-            {   
-                ArticulationDrive currentDrive = joint.xDrive;
-                currentDrive.stiffness = stiffness;
-                currentDrive.damping = damping;
-                joint.xDrive = currentDrive;
-            }
-        }
-
-    // Logic to direct the end effector along the RRT path and switch targets
-    void FixedUpdate(){
-        ArticulationDrive j1d = j1.xDrive;
-        ArticulationDrive j2d = j2.xDrive;
-        ArticulationDrive j3d = j3.xDrive;
-        ArticulationDrive j4d = j4.xDrive;
-        ArticulationDrive j5d = j5.xDrive;
-        ArticulationDrive j6d = j6.xDrive;
-
-        if(pick == true && place == false){
-            current_target.transform.position = GetFK(theta_1, theta_2, theta_3, theta_4, theta_5, theta_6).GetColumn(3);
-            ef_wc = current_target.transform.position;
-            GetIK(theta_1, theta_2, theta_3, theta_4, theta_5, theta_6, current_interop_point);
-            }
-
-        if (pick == false && place == true){
-            current_target.transform.position = GetFK(theta_1, theta_2, theta_3, theta_4, theta_5, theta_6).GetColumn(3);
-            ef_wc = current_target.transform.position;
-            if (current_target_index == 0){
-                GetIK(theta_1, theta_2, theta_3, theta_4, theta_5, theta_6, new UnityEngine.Vector3(0.50279f, 0.00739f, 0.0378f));
-            }
-            if (current_target_index == 1){
-                GetIK(theta_1, theta_2, theta_3, theta_4, theta_5, theta_6, new UnityEngine.Vector3(0.5138f, 0.00739f, 0.2041f));
-            }
-            if (current_target_index == 2){
-                GetIK(theta_1, theta_2, theta_3, theta_4, theta_5, theta_6, new UnityEngine.Vector3(0.5138f, 0.00739f, 0.3539f));
-            }
-            if (current_target_index == 3){
-                GetIK(theta_1, theta_2, theta_3, theta_4, theta_5, theta_6, new UnityEngine.Vector3(0.2995f, 0.00739f, -0.0321f));
-            }
-            target_set = false;
-            }
-
-        if (pick == false && place == false && target_set == true){
-            ef_wc = GetFK(theta_1, theta_2, theta_3, theta_4, theta_5, theta_6).GetColumn(3);
-            GetIK(theta_1, theta_2, theta_3, theta_4, theta_5, theta_6, current_interop_point);
-            }
-
-        if (next_target == true){
-            path_wc = new List<Vector3>();
-            if (current_target_index == 0){
-                current_target = all_targets[0];
-                current_target_loc = target_loc_dict[current_target];
-                path_wc = GetPath();
-                current_interop_point = path_wc[0];
-                target_set = true;
-                next_target = false;
-            }
-            if (current_target_index == 1){
-                current_target = all_targets[1];
-                current_target_loc = target_loc_dict[current_target];
-                path_wc = GetPath();
-                target_set = true;
-                next_target = false;
-            }
-            if (current_target_index == 2){
-                current_target = all_targets[2];
-                current_target_loc = target_loc_dict[current_target];
-                path_wc = GetPath();
-                target_set = true;
-                next_target = false;
-            }
-            if (current_target_index == 3){
-                current_target = all_targets[3];
-                current_target_loc = target_loc_dict[current_target];
-                path_wc = GetPath();
-                target_set = true;
-                next_target = false;
-            }
-        }
-        
-        j1d.target = theta_1;
-        j2d.target = theta_2;
-        j3d.target = theta_3;
-        j4d.target = theta_4;
-        j5d.target = theta_5;
-        j6d.target = theta_6;
-
-        j1.xDrive = j1d;
-        j2.xDrive = j2d;
-        j3.xDrive = j3d;
-        j4.xDrive = j4d;
-        j5.xDrive = j5d;
-        j6.xDrive = j6d;
         }
     }   

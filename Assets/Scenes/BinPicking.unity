@@ -182,6 +182,19 @@ MonoBehaviour:
   current_interop_point: {x: 0, y: 0, z: 0}
   start_state: {x: 0, y: 0, z: 0}
   current_target_index: 0
+--- !u!114 &349063378
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 349063373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bf0ea624bc53284ba2b1fe687c99e9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rc: {fileID: 349063374}
 --- !u!171741748 &668492667 stripped
 ArticulationBody:
   m_CorrespondingSourceObject: {fileID: 1603803987601148806, guid: 9b4f6e614a29bda4987b4a965ba26a58, type: 3}
@@ -818,6 +831,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 9174195910661572210, guid: 9b4f6e614a29bda4987b4a965ba26a58, type: 3}
       insertIndex: -1
       addedObject: {fileID: 349063374}
+    - targetCorrespondingSourceObject: {fileID: 9174195910661572210, guid: 9b4f6e614a29bda4987b4a965ba26a58, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 349063378}
   m_SourcePrefab: {fileID: 100100000, guid: 9b4f6e614a29bda4987b4a965ba26a58, type: 3}
 --- !u!1001 &8151622442222550356
 PrefabInstance:
