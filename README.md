@@ -6,5 +6,5 @@ This repository uses the URDF of the ABBIRB120 robot arm for pick and place task
 
 1.  Clone the repo
     ```sh
-    git clone [https://github.com/robotic-vision-lab/ABB120.git](https://github.com/robotic-vision-lab/ABB120.git)
+    git clone https://github.com/robotic-vision-lab/ABB120.git
     ```
