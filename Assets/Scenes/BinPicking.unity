@@ -462,6 +462,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7261933458186925744, guid: 116ade1ae2e116949b081b18f9999892, type: 3}
+      propertyPath: m_TagString
+      value: cam1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7590757236986746932, guid: 116ade1ae2e116949b081b18f9999892, type: 3}
+      propertyPath: m_TagString
+      value: cam2
+      objectReference: {fileID: 0}
     - target: {fileID: 7697301469697986823, guid: 116ade1ae2e116949b081b18f9999892, type: 3}
       propertyPath: m_Name
       value: abb120_teleop_env
@@ -819,6 +827,14 @@ PrefabInstance:
     - target: {fileID: 8279724099383402931, guid: 9b4f6e614a29bda4987b4a965ba26a58, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 8623768023036284786, guid: 9b4f6e614a29bda4987b4a965ba26a58, type: 3}
+      propertyPath: m_Name
+      value: cam_3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8623768023036284786, guid: 9b4f6e614a29bda4987b4a965ba26a58, type: 3}
+      propertyPath: m_TagString
+      value: cam3
       objectReference: {fileID: 0}
     - target: {fileID: 9174195910661572210, guid: 9b4f6e614a29bda4987b4a965ba26a58, type: 3}
       propertyPath: m_Name
