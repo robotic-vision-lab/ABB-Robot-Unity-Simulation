@@ -8,8 +8,8 @@ using TDx.TDxInput;
 public class SpaceMouseController : MonoBehaviour
 {
     
-    public float TSpeed = 10.0f;
-    public float RSpeed = 10.0f;
+    public float TSpeed = 0.001f;
+    public float RSpeed = 20f;
     private Device mouse;
     private Sensor sensor;
 

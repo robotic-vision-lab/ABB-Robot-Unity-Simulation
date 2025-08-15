@@ -419,6 +419,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: spacemouse_test
       objectReference: {fileID: 0}
+    - target: {fileID: 6775774540660725279, guid: 946868f46617bb54b83d65ae0759f627, type: 3}
+      propertyPath: RSpeed
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 6775774540660725279, guid: 946868f46617bb54b83d65ae0759f627, type: 3}
+      propertyPath: TSpeed
+      value: 0.001
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

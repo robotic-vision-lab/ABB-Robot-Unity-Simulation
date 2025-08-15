@@ -45,7 +45,7 @@ public class RobotController : MonoBehaviour {
     public float theta_3;
     [Range(-160.0f, 160.0f)]
     public float theta_4;
-    [Range(-120.0f, 120.0f)]
+    [Range(-20.0f, 100.0f)]
     public float theta_5;
     [Range(0f, 360f)]
     public float theta_6;
