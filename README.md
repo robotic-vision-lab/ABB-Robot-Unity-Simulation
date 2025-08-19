@@ -22,7 +22,6 @@ This simulation has the following software requirements:
 ### Installation
 
 After installing the required software, clone the repository:
-Clone the repo
 
     $ git clone https://github.com/robotic-vision-lab/ABB-Robot-Unity-Simulation.git
 
