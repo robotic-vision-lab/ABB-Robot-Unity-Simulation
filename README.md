@@ -40,7 +40,7 @@ SpaceMouseTest.
 ### Bin Picking
 
 The robot can perform a bin-picking task within the BinPicking scene. To enable
-simulation, execute the following steps:
+the simulation, execute the following steps:
 
 1. While in Play Mode, click on "abb_new" in the Hierarchy tab on the left.
 2. In the Inspector window, clicking the "Next Target" button will highlight a
