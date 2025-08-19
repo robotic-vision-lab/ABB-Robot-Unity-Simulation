@@ -10,7 +10,7 @@ This repository provides source code and assets for simulating the ABB IRB 120
 robot via Unity. At just 25 kg, the ABB IRB 120 is the smallest robot available
 in the ABB lineup. We utilize the URDF of the robot and demonstrate the task of
 pick and place using search space constrained RRT path planning. The robot is
-also able to track an object, which can be controlled spacemouse inputs.
+also able to track an object, which can be controlled by spacemouse inputs.
 
 ### System Requirements
 
