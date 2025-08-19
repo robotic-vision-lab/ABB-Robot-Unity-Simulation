@@ -1,46 +1,68 @@
-# ABB120 Simulation
+## ABB Robot Unity Simulation
 
-This repository uses the URDF of the ABBIRB120 robot arm for pick and place task using search space constrained RRT path planning. The robot is also able to track an object which can be controlled w/ SpaceMouse inputs.
+### Overview
 
-![Preview](images/environment.png)
+<p align="center">
+<img src="images/environment_overview.png" alt="environment_overview" width="400"/>
+</p>
 
-## Requirements
+This repository provides source code and assets for simulating the ABB IRB 120
+robot via Unity. At just 25 kg, the ABB IRB 120 is the smallest robot available
+in the ABB lineup. We utilize the URDF of the robot and demonstrate the task of
+pick and place using search space constrained RRT path planning. The robot is
+also able to track an object, which can be controlled spacemouse inputs.
 
-1. [SpaceMouse SDK](https://3dconnexion.com/tw/service/)
-2. [Unity](https://unity.com/download)
+### System Requirements
 
-## Installation
+This simulation has the following software requirements:
 
-1.  Clone the repo
-    ```sh
-    git clone https://github.com/robotic-vision-lab/ABB120.git
-    ```
+- [Unity](https://unity.com/download)
+- [SpaceMouse SDK](https://3dconnexion.com/tw/service/)
 
-2. Open Unity Hub and click "Add project from disk". Select the "ABB120" folder that was just cloned.
+### Installation
 
-![Load Project](images/loadproj.png)
+After installing the required software, clone the repository:
+Clone the repo
 
-## Scenes
+    $ git clone https://github.com/robotic-vision-lab/ABB-Robot-Unity-Simulation.git
 
-In the Assets/Scenes folder, there are two scenes: BinPicking and SpaceMouseTest
+Then, open Unity Hub and click "Add project from disk." Lastly, select the
+"ABB-Robot-Unity-Simulation" folder that was just cloned.
+
+<p align="left">
+<img src="images/load_project.png" alt="load_project" width="400"/>
+</p>
+
+### Scenes
+
+In the Assets/Scenes folder, there are two scenes: BinPicking and
+SpaceMouseTest.
 
 ### Bin Picking
 
-The robot performs the pick and place task in this scene:
+The robot can perform a bin picking task in the BinPicking scene. To enable
+simulation, execute the following steps:
 
 1. While in Play Mode, click on "abb_new" in the Hierarchy tab on the left.
-2. In the Inspector window, clicking the "Next Target" button will highlight a green path to the target.
-3. Clicking "Next Point" will move the end effector along the interop points of the path until it reaches the target. The robot will return to its neutral state with the target (Note: clicking "Next Point" again will move bot the robot and target along the path).
+2. In the Inspector window, clicking the "Next Target" button will highlight a
+green path to the target.
+3. Clicking "Next Point" will move the end effector along the interop points of
+the path until it reaches the target. The robot will return to its neutral
+state with the target. Note: clicking "Next Point" again will move the robot
+and target along the path.
 4. Clicking "Place" will place the object in a bin. 
 5. Clicking "Next Target" will create another path to a new target.
 
-### SpaceMouseTest
+### Spacemouse Test
 
-The robot will track the "spacemouse_test" (which can be controlled using a SpaceMouse) object in this scene.
+The robot will track the "spacemouse_test" (which can be controlled using a
+SpaceMouse) object in this scene. In the Inspector tab of the
+"spacemouse_test" object, the rotation and translation speed can be controlled.
 
-In the Inspector tab of the "spacemouse_test" object, the rotation and translation speed can be controlled
+### Open Problems 
 
-## Current Problems
+The current simulation has the following issues: 
 
-1. The logic of the pick and place buttons is not fully fleshed out
-2. The IK can sometimes cause the joints to rotate outside of the expected range
+1. The logic of the pick-and-place buttons is not fully fleshed out. 
+2. The inverse kinematics can sometimes cause the joints to rotate outside of
+the expected range.
