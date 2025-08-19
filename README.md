@@ -10,7 +10,7 @@ This repository provides source code and assets for simulating the ABB IRB 120
 robot via Unity. At just 25 kg, the ABB IRB 120 is the smallest robot available
 in the ABB lineup. We utilize the URDF of the robot and demonstrate the task of
 pick and place using search space constrained RRT path planning. The robot is
-also able to track an object, which can be controlled by spacemouse inputs.
+also able to track an object, which can be controlled by SpaceMouse inputs.
 
 ### System Requirements
 
@@ -52,11 +52,11 @@ and target along the path.
 4. Clicking "Place" will place the object in a bin. 
 5. Clicking "Next Target" will create another path to a new target.
 
-### Spacemouse Test
+### SpaceMouse Test
 
 The robot will track the "spacemouse_test" (which can be controlled using a
 SpaceMouse) object in this scene. In the Inspector tab of the
-"spacemouse_test" object, the rotation and translation speed can be controlled.
+"spacemouse_test" object, the rotation and translation speed can be adjusted.
 
 ### Open Problems 
 
