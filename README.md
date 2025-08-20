@@ -14,7 +14,7 @@ also able to track an object, which can be controlled by SpaceMouse inputs.
 
 ### System Requirements
 
-This simulation has the following software requirements:
+This simulation has the following requirements:
 
 - [Unity](https://unity.com/download)
 - [3Dconnexion SpaceMouse SDK](https://3dconnexion.com/tw/service/)
