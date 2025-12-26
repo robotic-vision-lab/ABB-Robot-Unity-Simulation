@@ -3,7 +3,7 @@
 ### Overview
 
 <p align="center">
-<img src="images/environment_overview.png" alt="environment_overview" width="400"/>
+  <img src="images/environment_overview.png" alt="environment overview" width="400"/>
 </p>
 
 This repository provides source code and assets for simulating the ABB IRB 120
@@ -29,7 +29,7 @@ Then, open Unity Hub and click "Add project from disk." Lastly, select the
 "ABB-Robot-Unity-Simulation" folder that was just cloned.
 
 <p align="left">
-<img src="images/load_project.png" alt="load_project" width="400"/>
+  <img src="images/load_project.png" alt="load project" width="400"/>
 </p>
 
 ### Scenes
